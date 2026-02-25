@@ -1,0 +1,59 @@
+Project #3
+This is my Climate Conference Project. I have designed 6 queries for this project.
+Database: https://www.db-fiddle.com/f/pxMci1sLL945KHKYvpe9W6/1
+
+
+
+-->>> Query #1: [LEFT JOIN] - List the first name, last name and event name of all VIP members. ---
+
+SELECT V.first_name, V.last_name, E.event_name
+FROM vips V
+LEFT JOIN events E
+ON V.event = E.event_id;
+
+
+-->>> Query #2: [INNER JOIN] - List all the 'reserch' affiliated VIP members who are registered for the welcome party. --
+
+SELECT V.first_name, V.last_name, R.welcome_rsvp
+FROM vips V
+INNER JOIN reservations R
+ON V.member_id = R.member_id
+WHERE V.assoc_type IS 'research' AND R.welcome_rsvp = 1;
+
+
+-->>> Query #3: [MULTIPLE JOIN] - List all the VIP members and the name of the hotel they are staying. --
+
+SELECT V.first_name, V.last_name, H.hotel_name
+FROM vips V
+LEFT JOIN reservations R
+ON V.member_id = R.member_id
+LEFT JOIN hotels H
+ON R.hotel = H.hotel_id;
+
+
+-->>> Query #4: [Query with subquery] List all the VIP members staying at hotel 1. --
+
+SELECT first_name, last_name
+FROM vips
+WHERE member_id IN
+(SELECT member_id
+FROM reservations 
+ WHERE hotel = 1);
+ 
+ 
+ -->>> Query #5: [SELF JOIN] - List all the names of the VIP members and who they are giving feedback to. --
+ 
+ SELECT V.first_name, V.last_name, V.member_id, D.first_name AS feedback_first_name, D.last_name AS feedback_last_name, V.provides_feedback_to
+ FROM vips V
+ INNER JOIN vips D
+ ON V.provides_feedback_to = D.member_id;
+ 
+ 
+ -->>> Query #6: Custom Query: List all the VIP members and weither they have RSVP'd for the Welcome Party or the Thank You Dinner. --
+ 
+ SELECT V.member_id, V.first_name, V.last_name, R.welcome_rsvp, R.dinner_rsvp
+ FROM vips V
+ LEFT JOIN reservations R
+ ON V.member_id = R.member_id
+ ORDER BY V.member_id;
+
