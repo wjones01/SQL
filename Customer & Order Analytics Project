@@ -62,3 +62,13 @@ WHERE Feb.Quantity > 2
 AND length(orderid) = 6
 AND orderid <> 'Order ID';
 
+#----
+Query #8: Which of the following lines of code will complete the query listed above so that it only retrieves employee IDs (employee_ID)) that:
+1. Start with ‘14’
+2. Have a single character after ‘14’
+3. End with ‘9’
+SELECT orderID
+FROM BIT_DB.MarSales
+WHERE orderID LIKE '16_0%';
+
+
