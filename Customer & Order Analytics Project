@@ -37,7 +37,7 @@ FROM BIT_DB.JanSales
 WHERE price in (SELECT min(price) FROM BIT_DB.JanSales);
 
 #-----
-Querey #5: What is the total revenue for each product sold in January?
+Query #5: What is the total revenue for each product sold in January?
 SELECT SUM(quantity)*price AS Revenue, product
 FROM BIT_DB.JanSales
 WHERE Length(orderID) = 6
@@ -70,5 +70,79 @@ Query #8: Which of the following lines of code will complete the query listed ab
 SELECT orderID
 FROM BIT_DB.MarSales
 WHERE orderID LIKE '16_0%';
+
+#----
+Query #9: How many of each type of headphone were sold in February?
+In other words, what is the sum of the quantity of products sold that have “headphones” in the name from the February dataset? Group the results by product.
+SELECT SUM(Quantity), Product
+FROM BIT_DB.FebSales
+WHERE Product LIKE '%Headphones%'
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+GROUP BY Product;
+
+#----
+Query #10: What was the average amount spent per account in February?
+In other words, what is the average amount spent / number of accounts, not the amount spent by each account.
+SELECT sum(quantity*price)/count(cust.acctnum)
+FROM BIT_DB.FebSales Feb
+LEFT JOIN BIT_DB.customers cust
+ON FEB.orderid=cust.order_id
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID';
+
+#OR
+SELECT avg(quantity*price)
+FROM BIT_DB.FebSales Feb
+LEFT JOIN BIT_DB.customers cust
+ON FEB.orderid=cust.order_id
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID';
+
+#----
+Query #11: Find order ids from Georgia (GA) where the order has an average price greater than $1,000. Only find orders from dates beginning with ‘04/1’. 
+Assume that the dates are stored in the MM/DD/YY HH:MM format.
+SELECT orderID
+FROM BIT_DB.AprSales
+WHERE orderdate LIKE '04/1%'
+AND location LIKE '%GA%'
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+GROUP BY orderID
+HAVING AVG(price) > 1000;
+
+#----
+Query #12: You’ve been given the following results from the MaySales table. Can you reverse engineer a SQL query that returns these results?
+The result set will naturally only return 10 rows (i.e., you will not have to use LIMIT to get to 10 results).
+#MaySales Results
+#location                           	      orderID
+818 Wilson St, Los Angeles, CA 90001	      194305
+2 Center St, Austin, TX 73301	              194315
+960 Park St, San Francisco, CA 94016	      194325
+53 Ridge St, Portland, OR 97035	            194335
+734 Hickory St, New York City, NY 10001	    194345
+196 Cherry St, Portland, OR 97035	          194355
+924 13th St, Los Angeles, CA 90001	        194365
+602 Washington St, New York City, NY 10001  194375
+399 12th St, San Francisco, CA 94016	      194385
+434 Pine St, Seattle, WA 98101	            194395
+#--
+SELECT location, orderID
+FROM BIT_DB.MaySales
+WHERE orderID LIKE '1943_5'
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+ORDER BY orderID;
+
+#----
+Query #13: Which product brought in the most revenue in January and how much revenue did it bring in total?
+In other words, show the one product that generated the most revenue (revenue being equivalent to quantity of an item multiplied by the item’s price). 
+SELECT product,
+sum(quantity*price)
+FROM BIT_DB.JanSales
+GROUP BY product
+ORDER BY sum(quantity*price) desc
+LIMIT 1;
+
 
 
