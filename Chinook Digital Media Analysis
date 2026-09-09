@@ -1,0 +1,177 @@
+-- >>>> Chinook Digital Media queries <<<<
+-- This is a mock digital media company. It uses a dataset called Chinook, which represents a digital media store and includes tables for artists, albums, media tracks, invoices, and customers.
+
+/*
+-- Query 1.: Show Customers (their full names, customer ID, and country) who are not in the US.
+SELECT FirstName, Lastname, Customerid, Country
+FROM customers
+WHERE Country != "USA"
+;
+*/
+
+/*
+-- Query 2.: Show only the Customers from Brazil.
+SELECT FirstName, Lastname, Customerid, Country
+FROM customers AS cu
+WHERE Country = "Brazil"
+;
+*/
+/*
+-- Query 3.: Find the Invoices of customers who are from Brazil.
+-- Show the customer's full name, Invoice ID, Date of the invoice, and billing country.
+SELECT cu.FirstName, cu.Lastname, iv.InvoiceId, iv.InvoiceDate, iv.BillingCountry
+FROM customers AS cu
+LEFT JOIN invoices AS iv
+    ON iv.Customerid = cu.CustomerId
+WHERE cu.Country = "Brazil"
+;
+*/
+/*
+-- Query 4.: Show the Employees who are Sales Agents.
+SELECT FirstName, LastName, Title
+FROM employees
+WHERE Title = "Sales Support Agent"
+;
+*/
+/*
+-- Query 5.: Find a unique/distinct list of billing countries from the Invoice table.
+SELECT DISTINCT BillingCountry
+FROM invoices;
+*/
+/*
+--Query 6.: Provide a query that shows the invoices associated with each sales agent. The resulting table should include the Sales Agent's full name.
+SELECT iv.InvoiceId, em.FirstName AS RepFirstName, em.LastName AS RepLastName
+FROM invoices AS iv
+LEFT JOIN customers AS cu
+    ON iv.CustomerId = cu.CustomerId
+LEFT JOIN employees AS em
+    ON cu.SupportRepId = em.EmployeeId
+    ORDER BY em.LastName
+;
+*/
+/*
+--Query 7.: Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.
+SELECT iv.InvoiceId, SUM(it.UnitPrice * it.Quantity) AS invoice_total,
+cu.FirstName AS CustomerFirstName, cu.LastName AS CustomerLastName,
+cu.Country,
+em.FirstName AS RepFirstName, em.LastName As RepLastName
+FROM invoices AS iv
+FULL JOIN customers AS cu
+    ON iv.CustomerId = cu.CustomerId
+LEFT JOIN employees AS em
+    ON cu.SupportRepId = em.EmployeeId
+LEFT JOIN invoice_items AS it
+    ON iv.InvoiceId = it.InvoiceId
+GROUP BY iv.InvoiceId
+;
+*/
+/*
+-- Query 8.: How many Invoices were there in 2009?
+SELECT COUNT(InvoiceId) AS Total_Inv_09
+FROM invoices
+WHERE InvoiceDate LIKE '2009%'
+;
+*/
+/*
+--Query 9.: What are the total sales for 2009?
+SELECT SUM(it.UnitPrice * it.Quantity) AS Total_2009
+FROM invoice_items AS it
+LEFT JOIN invoices AS iv
+    ON iv.InvoiceId = it.InvoiceId
+WHERE iv.InvoiceDate LIKE '2009%'
+;
+*/
+/*
+--Qyery 10.: Write a query that includes the purchased track name with each invoice line ID.
+SELECT it.InvoiceLineId, tr.Name AS Track_Name
+FROM invoice_items AS it
+LEFT JOIN tracks AS tr
+    ON it.TrackId = tr.TrackId
+ORDER BY InvoiceLineId ASC
+;
+*/
+/*
+--Query 11.: Write a query that includes the purchased track name AND artist name with each invoice line ID.
+SELECT it.InvoiceLineId, tr.Name AS Track_Name, ar.Name AS Artist_Name
+FROM invoice_items AS it
+LEFT JOIN tracks AS tr
+    ON it.TrackId = tr.TrackId
+LEFT JOIN artists AS ar
+    ON tr.AlbumId = ar.ArtistId
+ORDER BY InvoiceLineId ASC
+;
+*/
+/*
+-- Query 12.: Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+SELECT tr.Name AS TrackName, al.title AS AlbumTitle,me.Name AS MediaType,ge.Name AS Genre
+FROM tracks AS tr
+LEFT JOIN albums AS al
+    ON tr.AlbumId = al.AlbumId
+LEFT JOIN media_types AS me
+    ON tr.MediaTypeId = me.MediaTypeId
+LEFT JOIN genres AS ge
+    ON tr.GenreId = ge.GenreId
+ORDER BY al.Title
+;
+*/
+/*
+--Query 13.: Show the total sales made by each sales agent.
+SELECT SUM (it.UnitPrice*it.Quantity) AS Sales, em.FirstName, em.LastName, em.Title
+FROM invoice_items AS it
+LEFT JOIN invoices AS iv
+    ON it.InvoiceId = iv.InvoiceId
+LEFT JOIN customers AS cu
+    ON iv.CustomerId = cu.CustomerId
+LEFT JOIN employees AS em
+    ON cu.SupportRepId = em.EmployeeId
+WHERE em.Title = 'Sales Support Agent'
+GROUP BY em.LastName
+;
+*/
+/*
+--Query 14.: Which sales agent made the most sales in 2009?
+SELECT SUM (it.UnitPrice*it.Quantity) AS Sales, em.FirstName, em.LastName, em.Title
+FROM invoice_items AS it
+LEFT JOIN invoices AS iv
+    ON it.InvoiceId = iv.InvoiceId
+LEFT JOIN customers AS cu
+    ON iv.CustomerId = cu.CustomerId
+LEFT JOIN employees AS em
+    ON cu.SupportRepId = em.EmployeeId
+WHERE em.Title = 'Sales Support Agent' AND iv.InvoiceDate LIKE '2009%'
+GROUP BY em.LastName
+ORDER BY SALES DESC
+LIMIT 1
+;
+*/
+/*
+--Query 15.: List Genres by most sales.
+SELECT SUM(it.UnitPrice*it.Quantity) AS Sales, ge.Name
+FROM invoice_items AS it
+LEFT JOIN tracks AS tr
+    ON it.TrackId = tr.TrackId
+LEFT JOIN genres AS ge
+    ON tr.GenreId = ge.GenreId
+GROUP BY ge.Name
+ORDER BY SALES DESC
+;
+*/
+/*
+--Query 16.: List all customers who have purchased over 40. 
+SELECT cu.FirstName, cu.LastName, SUM(it.UnitPrice*it.Quantity) AS Sales
+FROM customers AS cu
+LEFT JOIN  invoices AS iv
+  ON cu.CustomerId = iv.CustomerId
+LEFT JOIN invoice_items AS it
+  ON iv.InvoiceId = it.InvoiceId
+GROUP BY cu.LastName, cu.FirstName
+HAVING SUM(it.UnitPrice * it.Quantity) > 40
+ORDER BY SALES DESC
+;
+*/
+/*
+--Query 17.: List all employees, position and who they report to. 
+SELECT FirstName, LastName, Title, ReportsTo
+FROM employees
+;
+*/
